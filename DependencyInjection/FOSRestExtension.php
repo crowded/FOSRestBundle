@@ -131,6 +131,7 @@ class FOSRestExtension extends Extension implements PrependExtensionInterface
             }
 
             $container->setParameter('fos_rest.throw_exception_on_unsupported_content_type', $config['body_listener']['throw_exception_on_unsupported_content_type']);
+            $container->setParameter('fos_rest.accept_form_content_type', $config['body_listener']['accept_form_content_type']);
             $container->setParameter('fos_rest.body_default_format', $config['body_listener']['default_format']);
             $container->setParameter('fos_rest.decoders', $config['body_listener']['decoders']);
 
