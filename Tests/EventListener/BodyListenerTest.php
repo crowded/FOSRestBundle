@@ -32,10 +32,11 @@ class BodyListenerTest extends \PHPUnit_Framework_TestCase
      * @param array   $expectedParameters                     the http parameters of the updated request
      * @param string  $contentType                            the request header content type
      * @param bool    $throwExceptionOnUnsupportedContentType
+     * @param bool    $acceptFormContentType
      *
      * @dataProvider testOnKernelRequestDataProvider
      */
-    public function testOnKernelRequest($decode, Request $request, $method, $expectedParameters, $contentType = null, $throwExceptionOnUnsupportedContentType = false)
+    public function testOnKernelRequest($decode, Request $request, $method, $expectedParameters, $contentType = null, $throwExceptionOnUnsupportedContentType = false, $acceptFormContentType = true)
     {
         $decoder = $this->getMockBuilder('FOS\RestBundle\Decoder\DecoderInterface')->disableOriginalConstructor()->getMock();
         $decoder->expects($this->any())
@@ -44,7 +45,7 @@ class BodyListenerTest extends \PHPUnit_Framework_TestCase
 
         $decoderProvider = new ContainerDecoderProvider(array('json' => 'foo'));
 
-        $listener = new BodyListener($decoderProvider, $throwExceptionOnUnsupportedContentType);
+        $listener = new BodyListener($decoderProvider, $throwExceptionOnUnsupportedContentType, null, false, $acceptFormContentType);
 
         if ($decode) {
             $container = $this->getMock('Symfony\Component\DependencyInjection\Container', array('get'));
@@ -254,6 +255,20 @@ class BodyListenerTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('\Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException');
         $this->testOnKernelRequest(false, new Request(array(), array(), array(), array(), array(), array(), 'foo'), 'POST', array(), 'application/foo', true);
+    }
+
+    /**
+     * Test that a disallowed form format will cause a UnsupportedMediaTypeHttpException to be thrown.
+     */
+    public function testUnsupportedMediaTypeHttpExceptionOnFormMediaType()
+    {
+        $this->setExpectedException('\Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException');
+        $this->testOnKernelRequest(false, new Request([], [], [], [], [], [], 'foo'), 'POST', [], 'application/form', true, false);
+    }
+
+    public function testShouldNotThrowUnsupportedMediaTypeHttpExceptionWhenIsAcceptedFormContentType()
+    {
+        $this->testOnKernelRequest(false, new Request([], [], [], [], [], [], 'foo'), 'POST', [], 'application/form', false, false);
     }
 
     public function testShouldNotThrowUnsupportedMediaTypeHttpExceptionWhenIsAnEmptyDeleteRequest()

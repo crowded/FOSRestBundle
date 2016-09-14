@@ -139,8 +139,8 @@ class FOSRestExtension extends Extension implements PrependExtensionInterface
 
             if (null !== $arrayNormalizer['service']) {
                 $bodyListener = $container->getDefinition('fos_rest.body_listener');
-                $bodyListener->addArgument(new Reference($arrayNormalizer['service']));
-                $bodyListener->addArgument($arrayNormalizer['forms']);
+                $bodyListener->replaceArgument(2, new Reference($arrayNormalizer['service']));
+                $bodyListener->replaceArgument(3, $arrayNormalizer['forms']);
             }
         }
     }

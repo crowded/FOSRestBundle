@@ -89,7 +89,7 @@ class FOSRestExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->container->hasDefinition('fos_rest.body_listener'));
         $this->assertParameter($decoders, 'fos_rest.decoders');
         $this->assertParameter(false, 'fos_rest.throw_exception_on_unsupported_content_type');
-        $this->assertCount(2, $this->container->getDefinition('fos_rest.body_listener')->getArguments());
+        $this->assertCount(5, $this->container->getDefinition('fos_rest.body_listener')->getArguments());
     }
 
     public function testLoadBodyListenerWithNormalizerString()
@@ -122,7 +122,7 @@ class FOSRestExtensionTest extends \PHPUnit_Framework_TestCase
         $normalizerArgument = $bodyListener->getArgument(2);
         $normalizeForms = $bodyListener->getArgument(3);
 
-        $this->assertCount(4, $bodyListener->getArguments());
+        $this->assertCount(5, $bodyListener->getArguments());
         $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $normalizerArgument);
         $this->assertEquals('fos_rest.normalizer.camel_keys', (string) $normalizerArgument);
         $this->assertEquals(false, $normalizeForms);
@@ -144,7 +144,7 @@ class FOSRestExtensionTest extends \PHPUnit_Framework_TestCase
         $normalizerArgument = $bodyListener->getArgument(2);
         $normalizeForms = $bodyListener->getArgument(3);
 
-        $this->assertCount(4, $bodyListener->getArguments());
+        $this->assertCount(5, $bodyListener->getArguments());
         $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $normalizerArgument);
         $this->assertEquals('fos_rest.normalizer.camel_keys', (string) $normalizerArgument);
         $this->assertEquals(true, $normalizeForms);
