@@ -74,6 +74,7 @@ class RestRouteLoader extends Loader
         $collection = $this->controllerReader->read(new \ReflectionClass($class));
         $collection->prependRouteControllersWithPrefix($prefix);
         $collection->setDefaultFormat($this->defaultFormat);
+        $collection->setDefaultType("rest");
 
         return $collection;
     }

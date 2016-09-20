@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
+use Symfony\Component\Routing\Router;
 
 /**
  * This listener handles Request body decoding.
@@ -33,6 +34,7 @@ class BodyListener
     private $defaultFormat;
     private $arrayNormalizer;
     private $normalizeForms;
+    private $router;
 
     /**
      * Constructor.
@@ -42,19 +44,22 @@ class BodyListener
      * @param ArrayNormalizerInterface $arrayNormalizer
      * @param bool                     $normalizeForms
      * @param bool                     $acceptFormContentType
+     * @param Router                   $router
      */
     public function __construct(
         DecoderProviderInterface $decoderProvider,
         $throwExceptionOnUnsupportedContentType = false,
         ArrayNormalizerInterface $arrayNormalizer = null,
         $normalizeForms = false,
-        $acceptFormContentType = true
+        $acceptFormContentType = true,
+        Router $router = null
     ) {
         $this->decoderProvider = $decoderProvider;
         $this->throwExceptionOnUnsupportedContentType = $throwExceptionOnUnsupportedContentType;
         $this->acceptFormContentType = $acceptFormContentType;
         $this->arrayNormalizer = $arrayNormalizer;
         $this->normalizeForms = $normalizeForms;
+        $this->router = $router;
     }
 
     /**
@@ -89,6 +94,11 @@ class BodyListener
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
+        if(!is_null($this->router)) {
+            $route = $this->router->getRouteCollection()->get($event->getRequest()->get("_route"));
+            if(is_null($route) || $route->getDefault("_type") != "rest") return;
+        }
+
         $request = $event->getRequest();
         $method = $request->getMethod();
         $contentType = $request->headers->get('Content-Type');

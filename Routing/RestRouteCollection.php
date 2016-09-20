@@ -70,6 +70,21 @@ class RestRouteCollection extends RouteCollection
     }
 
     /**
+     * Sets default type of routes.
+     *
+     * @param string $type
+     */
+    public function setDefaultType($type)
+    {
+        foreach (parent::all() as $route) {
+            // Set default format only if not set already (could be defined in annotation)
+            if (!$route->getDefault('_type')) {
+                $route->setDefault('_type', $type);
+            }
+        }
+    }
+
+    /**
      * Returns routes sorted by custom HTTP methods first.
      *
      * @return array
